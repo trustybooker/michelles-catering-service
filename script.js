@@ -1,3 +1,4 @@
+document.querySelectorAll('.photo-card img, .hero-art-image').forEach((image) => { const preload = new Image(); preload.src = image.currentSrc || image.src; });
 const dateField = document.querySelector('input[name="date"]');
 if (dateField) dateField.min = new Date().toISOString().slice(0, 10);
 const toggle = document.querySelector('.menu-toggle');
