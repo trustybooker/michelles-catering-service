@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 
 # Add the production sitemap URL after the final domain is selected.
+
+# Production environment configured
