@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /admin.html
+Disallow: /api/
 
-# Add the production sitemap URL after the final domain is selected.
-
-# Production environment configured
+Sitemap: https://michelles-catering-service.vercel.app/sitemap.xml
