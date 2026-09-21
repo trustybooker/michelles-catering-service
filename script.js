@@ -1,4 +1,15 @@
-document.querySelectorAll('.photo-card img, .hero-art-image').forEach((image) => { const preload = new Image(); preload.src = image.currentSrc || image.src; });
+document.querySelectorAll('.photo-card img, .hero-art-image').forEach((image) => {
+  const source = image.currentSrc || image.src;
+  const preload = new Image();
+  preload.onload = () => {
+    if (image.closest('.photo-card')) {
+      image.closest('.photo-card').style.backgroundImage = `url("${source}")`;
+      image.closest('.photo-card').style.backgroundSize = 'cover';
+      image.closest('.photo-card').style.backgroundPosition = 'center';
+    }
+  };
+  preload.src = source;
+});
 const dateField = document.querySelector('input[name="date"]');
 if (dateField) dateField.min = new Date().toISOString().slice(0, 10);
 const toggle = document.querySelector('.menu-toggle');
