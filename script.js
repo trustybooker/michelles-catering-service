@@ -1,4 +1,5 @@
 document.querySelectorAll('.photo-card img, .hero-art-image').forEach((image) => {
+  if (image.alt.startsWith('A generous Jamaican celebration buffet')) image.src = 'assets/images/catering-gathering-real.jpg';
   const source = image.currentSrc || image.src;
   const preload = new Image();
   preload.onload = () => {
