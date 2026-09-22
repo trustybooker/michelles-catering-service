@@ -1,5 +1,5 @@
 document.querySelectorAll('.photo-card img, .hero-art-image').forEach((image) => {
-  if (image.alt.startsWith('A generous Jamaican celebration buffet')) image.src = 'assets/images/catering-buffet-real.jpg';
+  if (image.alt.startsWith('A generous Jamaican celebration buffet')) image.src = 'assets/images/catering-gathering-live.jpg';
   if (image.alt.startsWith('Elegant Jamaican catering setup')) { image.src = 'assets/images/catering-buffet-real.jpg'; image.style.objectPosition = '72% center'; }
   const source = image.currentSrc || image.src;
   const preload = new Image();
