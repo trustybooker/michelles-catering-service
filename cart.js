@@ -16,6 +16,8 @@
   };
   document.querySelectorAll('.meal-option').forEach((option) => {
     const name = option.querySelector('h2')?.textContent || 'Menu selection';
+    const photo = name.startsWith('Jamaican') ? '../../assets/images/jamaican-classics-real.jpg' : name.startsWith('Celebration') ? '../../assets/images/catering-gathering-live.jpg' : name.startsWith('Office') ? '../../assets/images/catering-buffet-real.jpg' : '';
+    if (photo && !option.querySelector('img')) { const image = document.createElement('img'); image.src = photo; image.alt = `${name} catering`; image.loading = 'eager'; option.prepend(image); }
     const action = document.createElement('button');
     action.type = 'button'; action.className = 'button button-outline'; action.textContent = 'Add to quote';
     action.addEventListener('click', (event) => { event.preventDefault(); event.stopPropagation(); items.push(name); save(); render(); });
