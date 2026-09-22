@@ -1,5 +1,6 @@
 document.querySelectorAll('.photo-card img, .hero-art-image').forEach((image) => {
-  if (image.alt.startsWith('A generous Jamaican celebration buffet')) image.src = 'assets/images/catering-gathering-real.jpg';
+  if (image.alt.startsWith('A generous Jamaican celebration buffet')) image.src = 'assets/images/catering-buffet-real.jpg';
+  if (image.alt.startsWith('Elegant Jamaican catering setup')) image.src = 'assets/images/catering-buffet-real.jpg';
   const source = image.currentSrc || image.src;
   const preload = new Image();
   preload.onload = () => {
@@ -11,6 +12,8 @@ document.querySelectorAll('.photo-card img, .hero-art-image').forEach((image) =>
   };
   preload.src = source;
 });
+const storyImage = document.querySelector('.story-image');
+if (storyImage) storyImage.style.backgroundImage = "url('assets/images/catering-buffet-real.jpg')";
 const dateField = document.querySelector('input[name="date"]');
 if (dateField) dateField.min = new Date().toISOString().slice(0, 10);
 const toggle = document.querySelector('.menu-toggle');
