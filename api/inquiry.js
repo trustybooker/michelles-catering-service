@@ -1,3 +1,4 @@
+import { neon } from '@neondatabase/serverless';
 const attempts = new Map();
 const eventTypes = new Set(['Wedding', 'Birthday or celebration', 'Corporate or office event', 'Family reunion', 'Private dinner', 'Other']);
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -16,6 +17,7 @@ export default async function handler(req, res) {
   if (!process.env.RESEND_API_KEY || !process.env.INQUIRY_TO_EMAIL || !process.env.RESEND_FROM_EMAIL) return json(res, 503, { error: 'Email service is not configured' });
   const safe = value => String(value).slice(0, 2000).replace(/[&<>\"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;' }[char]));
   const html = `<h2>New Michelle's Catering inquiry</h2><p><strong>Name:</strong> ${safe(name)}</p><p><strong>Email:</strong> ${safe(email)}</p><p><strong>Date:</strong> ${safe(date)}</p><p><strong>Guests:</strong> ${safe(guests)}</p><p><strong>Event:</strong> ${safe(eventType)}</p><p><strong>Details:</strong><br>${safe(message || 'None provided').replace(/\n/g, '<br>')}</p>`;
+  if (process.env.DATABASE_URL) { try { const sql = neon(process.env.DATABASE_URL); await sql`INSERT INTO inquiries (name, email, event_date, guests, event_type, message) VALUES (${name.trim()}, ${email.trim().toLowerCase()}, ${date}, ${Number(guests)}, ${eventType}, ${message.trim()})`; } catch (error) { console.error('Inquiry database persistence failed', error); } }
   let response;
   try { response = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: process.env.RESEND_FROM_EMAIL, to: [process.env.INQUIRY_TO_EMAIL], reply_to: email, subject: `New catering inquiry — ${safe(eventType)} — ${safe(date)}`, html }) }); } catch (error) { return json(res, 502, { error: 'Email provider unavailable' }); }
   if (!response.ok) return json(res, 502, { error: 'Email provider rejected the request' });
