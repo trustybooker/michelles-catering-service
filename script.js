@@ -13,7 +13,7 @@ document.querySelectorAll('.photo-card img, .hero-art-image').forEach((image) =>
   preload.src = source;
 });
 const storyImage = document.querySelector('.story-image');
-if (storyImage) storyImage.style.backgroundImage = "url('assets/images/catering-buffet-real.jpg')";
+if (storyImage) storyImage.style.backgroundImage = "url('assets/images/catering-story-live.jpg')";
 const dateField = document.querySelector('input[name="date"]');
 if (dateField) dateField.min = new Date().toISOString().slice(0, 10);
 const toggle = document.querySelector('.menu-toggle');
