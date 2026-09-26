@@ -8,7 +8,10 @@ const cleanSettings = (value) => {
   for (const [key, raw] of Object.entries(value)) {
     if (!allowed.has(key) || typeof raw !== 'string') continue;
     const value = raw.trim();
-    if (value.length <= 1000) output[key] = value;
+    if (value.length > 1000) continue;
+    if (key === 'depositPercent' && (!/^\d{1,3}$/.test(value) || Number(value) < 0 || Number(value) > 100)) continue;
+    if (key === 'stripePaymentLink' && value && !/^https:\/\/buy\.stripe\.com\/[A-Za-z0-9_\-/?=&]+$/.test(value)) continue;
+    output[key] = value;
   }
   return output;
 };
