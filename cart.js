@@ -1,7 +1,8 @@
 (() => {
   const key = 'michelles-quote-cart';
-  const items = JSON.parse(localStorage.getItem(key) || '[]');
-  const save = () => localStorage.setItem(key, JSON.stringify(items));
+  let items = [];
+  try { const stored = JSON.parse(localStorage.getItem(key) || '[]'); if (Array.isArray(stored)) items = stored.filter((item) => typeof item === 'string').slice(0, 20); } catch { localStorage.removeItem(key); }
+  const save = () => { try { localStorage.setItem(key, JSON.stringify(items)); return true; } catch { return false; } };
   const label = (name) => name.replace(/\s+/g, ' ').trim();
   const render = () => {
     let panel = document.querySelector('.quote-cart');
@@ -20,7 +21,7 @@
     if (photo && !option.querySelector('img')) { const image = document.createElement('img'); image.src = photo; image.alt = `${name} catering`; image.loading = 'eager'; option.prepend(image); }
     const action = document.createElement('button');
     action.type = 'button'; action.className = 'button button-outline'; action.textContent = 'Add to quote';
-    action.addEventListener('click', (event) => { event.preventDefault(); event.stopPropagation(); items.push(name); save(); render(); });
+    action.addEventListener('click', (event) => { event.preventDefault(); event.stopPropagation(); if (!items.includes(name)) { items.push(name); save(); render(); } });
     option.querySelector('div')?.append(action);
   });
   render();
