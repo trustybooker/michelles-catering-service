@@ -4,7 +4,7 @@ export default async function handler(req,res) {
   const queryToken = req.query?.token;
   const token = String(Array.isArray(queryToken) ? queryToken[0] : (queryToken || new URL(req.url, 'https://michelles-catering-service.vercel.app').searchParams.get('token') || ''));
   const [email,expiry,sig]=token.split('.');
-  if(!email||!expiry||!sig||email.toLowerCase()!==String(process.env.ADMIN_EMAIL||'').trim().toLowerCase()||Number(expiry)<Date.now()||!process.env.ADMIN_SESSION_SECRET) return res.status(401).json({error:'Invalid or expired owner link'});
+  if(!email||!expiry||!sig||Number(expiry)<Date.now()||!process.env.ADMIN_SESSION_SECRET) return res.status(401).json({error:'Invalid or expired owner link'});
   const payload=`${email}.${expiry}`;
   const expected=createHmac('sha256',process.env.ADMIN_SESSION_SECRET).update(payload).digest('hex');
   if(sig.length!==expected.length) return res.status(401).json({error:'Invalid owner link'});
