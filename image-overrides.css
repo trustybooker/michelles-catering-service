@@ -20,4 +20,6 @@
   .concierge-panel{bottom:62px;max-height:calc(100dvh - 100px);overflow:auto}
   .concierge-messages{max-height:28dvh}
   .quote-cart{right:14px;bottom:14px;width:calc(100% - 28px)}
+  .meal-option{grid-template-columns:1fr;gap:.75rem}
+  .meal-option img{height:180px;max-width:none}
 }
