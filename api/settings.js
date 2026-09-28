@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 const sql = () => neon(process.env.DATABASE_URL);
-const allowed = new Set(['businessName','tagline','heroMessage','phone','serviceArea','zelle','cashapp','paymentNote','stripePaymentLink','depositPercent','depositPolicy','instagram','facebook','tiktok','broadcastFrom','inquiryTo','resendFrom','bookingStatus','broadcastStatus','primaryColor','accentColor','classicsPrice','celebrationPrice','officePrice','sweetsPrice','classicsDescription','celebrationDescription','officeDescription','sweetsDescription','eventEnabled','eventTitle','eventDescription','eventDateLabel','eventTimeLabel','eventAddress','eventMenu','eventCountdownEnabled','eventCountdownDate','eventCountdownLabel']);
+const allowed = new Set(['businessName','tagline','heroMessage','phone','serviceArea','zelle','cashapp','paymentNote','stripePaymentLink','depositPercent','depositPolicy','instagram','facebook','tiktok','broadcastFrom','inquiryTo','resendFrom','bookingStatus','broadcastStatus','primaryColor','accentColor','classicsPrice','celebrationPrice','officePrice','sweetsPrice','classicsDescription','celebrationDescription','officeDescription','sweetsDescription','eventEnabled','eventTitle','eventDescription','eventDateLabel','eventTimeLabel','eventAddress','eventMenu','eventFlyerImageUrl','brandAssetUrl','eventCountdownEnabled','eventCountdownDate','eventCountdownLabel']);
 const cleanSettings = (value) => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   const output = {};
@@ -11,6 +11,7 @@ const cleanSettings = (value) => {
     if (value.length > 1000) continue;
     if (key === 'depositPercent' && (!/^\d{1,3}$/.test(value) || Number(value) < 0 || Number(value) > 100)) continue;
     if (key === 'stripePaymentLink' && value && !/^https:\/\/buy\.stripe\.com\/[A-Za-z0-9_\-/?=&]+$/.test(value)) continue;
+    if ((key === 'eventFlyerImageUrl' || key === 'brandAssetUrl') && value && !/^https:\/\//i.test(value)) continue;
     output[key] = value;
   }
   return output;
