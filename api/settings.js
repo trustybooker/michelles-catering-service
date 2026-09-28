@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 const sql = () => neon(process.env.DATABASE_URL);
-const allowed = new Set(['businessName','tagline','heroMessage','phone','serviceArea','zelle','cashapp','paymentNote','stripePaymentLink','depositPercent','depositPolicy','instagram','facebook','tiktok','broadcastFrom','inquiryTo','resendFrom','bookingStatus','broadcastStatus','primaryColor','accentColor','classicsPrice','celebrationPrice','officePrice','sweetsPrice','classicsDescription','celebrationDescription','officeDescription','sweetsDescription']);
+const allowed = new Set(['businessName','tagline','heroMessage','phone','serviceArea','zelle','cashapp','paymentNote','stripePaymentLink','depositPercent','depositPolicy','instagram','facebook','tiktok','broadcastFrom','inquiryTo','resendFrom','bookingStatus','broadcastStatus','primaryColor','accentColor','classicsPrice','celebrationPrice','officePrice','sweetsPrice','classicsDescription','celebrationDescription','officeDescription','sweetsDescription','eventCountdownEnabled','eventCountdownDate','eventCountdownLabel']);
 const cleanSettings = (value) => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   const output = {};
