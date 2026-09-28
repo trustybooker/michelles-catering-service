@@ -1,1 +1,1 @@
-{"private":true,"type":"module","dependencies":{"@neondatabase/serverless":"latest"}}
+{"private":true,"type":"module","dependencies":{"@neondatabase/serverless":"latest","@vercel/blob":"latest"}}
