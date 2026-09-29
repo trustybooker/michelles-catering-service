@@ -4,7 +4,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 const ownerSession = (req) => {
   const token = String(req.headers.cookie || '').match(/michelle_admin=([^;]+)/)?.[1];
   if (!token || !process.env.ADMIN_SESSION_SECRET) return false;
-  const [email, expiry, sig] = token.split('.');
+  const end = token.lastIndexOf('.'), middle = token.lastIndexOf('.', end - 1), email = middle > 0 ? token.slice(0, middle) : '', expiry = middle > 0 ? token.slice(middle + 1, end) : '', sig = end > middle ? token.slice(end + 1) : '';
   const payload = `${email}.${expiry}`;
   const expected = createHmac('sha256', process.env.ADMIN_SESSION_SECRET).update(payload).digest('hex');
   try { return email.trim().toLowerCase() === String(process.env.ADMIN_EMAIL || '').trim().toLowerCase() && Number(expiry) > Date.now() && sig?.length === expected.length && timingSafeEqual(Buffer.from(sig), Buffer.from(expected)); } catch { return false; }
