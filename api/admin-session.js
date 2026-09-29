@@ -44,7 +44,7 @@ export default async function handler(req, res) {
     console.warn('Owner session rejected', reason);
     return res.status(401).json({ error: 'Invalid or expired owner link' });
   }
-  const payload = \${emailPart}.\${expiry};
+  const payload = emailPart + '.' + expiry;
   const expected = createHmac('sha256', process.env.ADMIN_SESSION_SECRET).update(payload).digest('hex');
   if (sig.length !== expected.length) {
     console.warn('Owner session rejected', 'signature-length');
@@ -59,6 +59,6 @@ export default async function handler(req, res) {
     console.warn('Owner session rejected', 'signature-compare');
     return res.status(401).json({ error: 'Invalid owner link' });
   }
-  res.setHeader('Set-Cookie', \`michelle_admin=\${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800\`);
+  res.setHeader('Set-Cookie', 'michelle_admin=' + token + '; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800');
   return res.status(200).json({ ok: true });
 }
