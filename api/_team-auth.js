@@ -4,7 +4,8 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 export async function sessionRole(req) {
   const token = String(req.headers.cookie || '').match(/michelle_admin=([^;]+)/)?.[1];
   if (!token || !process.env.ADMIN_SESSION_SECRET) return null;
-  const [email, expiry, sig] = token.split('.');
+  const end = token.lastIndexOf('.'), middle = token.lastIndexOf('.', end - 1);
+  const email = middle > 0 ? token.slice(0, middle) : '', expiry = middle > 0 ? token.slice(middle + 1, end) : '', sig = end > middle ? token.slice(end + 1) : '';
   const payload = `${email}.${expiry}`;
   const expected = createHmac('sha256', process.env.ADMIN_SESSION_SECRET).update(payload).digest('hex');
   try {
