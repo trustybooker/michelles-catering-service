@@ -4,7 +4,7 @@ export default async function handler(req,res) {
   res.setHeader('Cache-Control','no-store');
   const queryToken = req.query?.token;
   const token = String(Array.isArray(queryToken) ? queryToken[0] : (queryToken || new URL(req.url, 'https://michelles-catering-service.vercel.app').searchParams.get('token') || ''));
-  const [email,expiry,sig]=token.split('.');
+  const end=token.lastIndexOf('.'), middle=token.lastIndexOf('.',end-1), email=middle>0?token.slice(0,middle):'', expiry=middle>0?token.slice(middle+1,end):'', sig=end>middle?token.slice(end+1):'';
   const configuredOwner=String(process.env.ADMIN_EMAIL||'').trim().toLowerCase();
   const ownerMatch=email?.trim().toLowerCase()===configuredOwner;
   const teamMatch=!ownerMatch&&process.env.DATABASE_URL ? (await neon(process.env.DATABASE_URL)`SELECT role FROM team_members WHERE email=${email.trim().toLowerCase()} AND active=TRUE LIMIT 1`).length>0 : false;
