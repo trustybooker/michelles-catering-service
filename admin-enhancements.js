@@ -1,4 +1,10 @@
 (() => {
+  const previewLink = document.querySelector('.admin-actions a[href="index.html"]');
+  if (previewLink) {
+    previewLink.textContent = 'Preview live site ↗';
+    previewLink.target = '_blank';
+    previewLink.rel = 'noopener';
+  }
   const key = 'michelles-admin-settings';
   const defaults = { classicsPrice: 'Quote', celebrationPrice: 'Quote', officePrice: 'Quote', sweetsPrice: 'Quote', classicsDescription: 'Jerk chicken · Oxtail · Curry goat · Brown stew · Escovitch fish · Global comfort favorites', celebrationDescription: 'Buffet packages for birthdays, graduations, family reunions, and community gatherings.', officeDescription: 'Polished catering for corporate lunches, receptions, showers, and weddings.', sweetsDescription: 'Warm, welcoming desserts, fruit-forward bites, and final touches to complete the table.', depositPercent: '30', depositPolicy: 'A deposit is requested only after Michelle confirms the quote, date, menu, and service details.', stripePaymentLink: '', eventEnabled: 'true', eventTitle: 'Cookout flavor. Come eat & enjoy.', eventDescription: 'Join Michelle for a warm Jamaican cookout with curry chicken, jerk chicken, oxtails, escovitch fish, rice and peas, festivals, steamed vegetables, fresh juices, and more.', eventDateLabel: 'Friday, October 9, 2026', eventTimeLabel: '12:00 PM until', eventAddress: '461 SW Holden Terrace · Port St. Lucie, FL 34984', eventMenu: 'Curry chicken $15 · Jerk chicken $15 · Oxtails $25 · Escovitch fish $25\nSides: rice & peas · festivals · steamed vegetables · Jamaican rice & peas\nExtra sides $5 · Soda $3 · Fresh juices $6', eventFlyerImageUrl: '', brandAssetUrl: '', eventCountdownEnabled: 'true', eventCountdownDate: '2026-10-09T12:00:00-04:00', eventCountdownLabel: 'Cookout begins in' };
   const read = () => { try { return { ...defaults, ...(JSON.parse(localStorage.getItem(key) || '{}') || {}) }; } catch { return { ...defaults }; } };
