@@ -1,11 +1,14 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { neon } from '@neondatabase/serverless';
 export default async function handler(req,res) {
   res.setHeader('Cache-Control','no-store');
   const queryToken = req.query?.token;
   const token = String(Array.isArray(queryToken) ? queryToken[0] : (queryToken || new URL(req.url, 'https://michelles-catering-service.vercel.app').searchParams.get('token') || ''));
-  const [email,expiry,sig]=token.split('.');
+  const end=token.lastIndexOf('.'), middle=token.lastIndexOf('.',end-1), email=middle>0?token.slice(0,middle):'', expiry=middle>0?token.slice(middle+1,end):'', sig=end>middle?token.slice(end+1):'';
   const configuredOwner=String(process.env.ADMIN_EMAIL||'').trim().toLowerCase();
-  const reason=!email||!expiry||!sig?'missing-parts':Number(expiry)<Date.now()?'expired':!process.env.ADMIN_SESSION_SECRET?'missing-secret':email.trim().toLowerCase()!==configuredOwner?'owner-mismatch':null;
+  const ownerMatch=email?.trim().toLowerCase()===configuredOwner;
+  const teamMatch=!ownerMatch&&email&&expiry&&sig&&process.env.DATABASE_URL ? (await neon(process.env.DATABASE_URL)`SELECT role FROM team_members WHERE email=${email.trim().toLowerCase()} AND active=TRUE LIMIT 1`).length>0 : false;
+  const reason=!email||!expiry||!sig?'missing-parts':Number(expiry)<Date.now()?'expired':!process.env.ADMIN_SESSION_SECRET?'missing-secret':(!ownerMatch&&!teamMatch)?'account-not-authorized':null;
   if(reason){ console.warn('Owner session rejected',reason); return res.status(401).json({error:'Invalid or expired owner link'}); }
   const payload=`${email}.${expiry}`;
   const expected=createHmac('sha256',process.env.ADMIN_SESSION_SECRET).update(payload).digest('hex');
