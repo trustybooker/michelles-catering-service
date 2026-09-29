@@ -36,6 +36,7 @@ export default async function handler(req, res) {
           ? 'owner-mismatch'
           : null;
   if (reason) {
+    if (reason === 'owner-mismatch') console.warn('Owner session email diagnostic', JSON.stringify({ email, emailLength: email.length, expectedLength: OWNER_EMAIL.length }));
     console.warn('Owner session rejected', reason);
     return res.status(401).json({ error: 'Invalid or expired owner link' });
   }
