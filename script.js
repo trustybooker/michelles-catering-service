@@ -16,7 +16,8 @@ const dateField = document.querySelector('input[name="date"]');
 if (dateField) dateField.min = new Date().toISOString().slice(0, 10);
 const toggle = document.querySelector('.menu-toggle');
 const links = document.querySelector('.nav-links');
-toggle?.addEventListener('click', () => { const open = links.classList.toggle('open'); toggle.setAttribute('aria-expanded', String(open)); });
+toggle?.addEventListener('click', () => { const open = links.classList.toggle('open'); toggle.setAttribute('aria-expanded', String(open)); if (open) links.querySelector('a')?.focus(); });
+document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') { links.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); toggle.focus(); } });
 const inquiryForm = document.querySelector('.inquiry-form');
 inquiryForm?.addEventListener('submit', async (event) => {
   event.preventDefault(); const form = event.currentTarget; const status = form.querySelector('.form-status'); const button = form.querySelector('button[type="submit"]'); const data = Object.fromEntries(new FormData(form)); const guests = Number(data.guests);
