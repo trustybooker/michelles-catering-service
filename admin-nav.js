@@ -24,6 +24,10 @@
       section.hidden = section.dataset.section !== name;
     });
   };
+  const nav = document.querySelector('.admin-nav');
+  nav?.setAttribute('role', 'tablist');
+  document.querySelectorAll('[data-tab]').forEach((button) => button.setAttribute('role', 'tab'));
+  document.querySelectorAll('[data-section]').forEach((section) => section.setAttribute('role', 'tabpanel'));
   document.addEventListener('click', (event) => {
     const button = event.target.closest?.('[data-tab]');
     if (button && !button.disabled) {
