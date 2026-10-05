@@ -1,0 +1,80 @@
+name: Production gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify source and affordances
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: |
+          set -euo pipefail
+          find . -type f -name '*.js' -not -path './node_modules/*' -print0 | xargs -0 -n1 node --check
+
+      - name: Check required production files
+        run: |
+          set -euo pipefail
+          test -f index.html
+          test -f admin.html
+          test -f script.js
+          test -f admin-auth.js
+          test -f site-settings.js
+          test -f api/inquiry.js
+          test -f api/settings.js
+
+      - name: Reject browser-local production settings fallbacks
+        run: |
+          set -euo pipefail
+          if rg -n "localStorage\\.(getItem|setItem).*michelles-admin-settings|Save locally|Local preview controls only|saved locally only" admin.html admin-*.js site-settings.js; then
+            echo 'Found a browser-local production settings fallback or stale demo copy.'
+            exit 1
+          fi
+
+      - name: Validate source affordances
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          class Audit(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.controls = []
+                  self.images = []
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if tag in {'a', 'button', 'input', 'select', 'textarea'}:
+                      self.controls.append((tag, attrs))
+                  if tag == 'img':
+                      self.images.append(attrs)
+
+          for filename in ('index.html', 'admin.html', 'catering/meal/index.html'):
+              path = Path(filename)
+              if not path.exists():
+                  raise SystemExit(f'missing expected page: {filename}')
+              audit = Audit()
+              audit.feed(path.read_text(encoding='utf-8'))
+              for tag, attrs in audit.images:
+                  if not attrs.get('alt', '').strip():
+                      raise SystemExit(f'{filename}: image missing alt text')
+              for tag, attrs in audit.controls:
+                  if tag == 'a' and not (attrs.get('href') or attrs.get('aria-label') or attrs.get('title')):
+                      raise SystemExit(f'{filename}: link missing href or accessible name')
+          print('Source affordance checks passed.')
+          PY
