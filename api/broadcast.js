@@ -1,12 +1,13 @@
 import { neon } from '@neondatabase/serverless';
 import { sessionRole } from './_team-auth.js';
 const safe=(value,max)=>String(value||'').trim().slice(0,max);
+const sanitizeHtml=(value)=>String(value||'').replace(/<\\s*(script|style|iframe|object|embed|form|svg|math)[^>]*>[\\s\\S]*?<\\s*\\/\\s*\\1\\s*>/gi,'').replace(/\\son\\w+\\s*=\\s*("[^"]*"|'[^']*'|[^\\s>]+)/gi,'').replace(/\\sstyle\\s*=\\s*("[^"]*"|'[^']*'|[^\\s>]+)/gi,'').replace(/\\s(href|src)\\s*=\\s*("|')\\s*javascript:[\\s\\S]*?\\2/gi,'').replace(/\\s(href|src)\\s*=\\s*("|')(?!https?:|mailto:|tel:|\\/|#)[\\s\\S]*?\\2/gi,'');
 export default async function handler(req,res){
   const access=await sessionRole(req);
   if(!access)return res.status(401).json({error:'Admin sign-in required'});
   if(access==='viewer')return res.status(403).json({error:'Viewer access is read-only'});
   if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
-  const subject=safe(req.body?.subject,160),html=safe(req.body?.html,12000),text=safe(req.body?.text,5000);
+  const subject=safe(req.body?.subject,160),html=sanitizeHtml(safe(req.body?.html,12000)),text=safe(req.body?.text,5000);
   if(!subject||!html)return res.status(400).json({error:'Subject and HTML content are required'});
   if(!process.env.DATABASE_URL||!process.env.RESEND_API_KEY||!process.env.RESEND_FROM_EMAIL)return res.status(503).json({error:'Broadcast sender or database is not configured'});
   const from=String(process.env.RESEND_FROM_EMAIL).trim(),base=process.env.PUBLIC_SITE_URL||'https://michelles-catering-service.vercel.app';
