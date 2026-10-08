@@ -12,8 +12,12 @@
       panel.setAttribute('aria-live', 'polite');
       document.body.append(panel);
     }
-    panel.innerHTML = `<strong>Your menu selections</strong>${items.length ? `<ul>${items.map((item, i) => `<li>${label(item)} <button type="button" data-remove="${i}" aria-label="Remove ${label(item)}">×</button></li>`).join('')}</ul><a class="button button-dark" href="../../index.html#inquire">Continue to quote</a>` : '<p>No menu selections yet.</p>'}`;
-    panel.querySelectorAll('[data-remove]').forEach((button) => button.addEventListener('click', () => { items.splice(Number(button.dataset.remove), 1); save(); render(); }));
+    panel.replaceChildren();
+    const heading = document.createElement('strong'); heading.textContent = 'Your menu selections'; panel.append(heading);
+    if (!items.length) { const empty = document.createElement('p'); empty.textContent = 'No menu selections yet.'; panel.append(empty); return; }
+    const list = document.createElement('ul');
+    items.forEach((item, index) => { const row = document.createElement('li'); row.append(document.createTextNode(`${label(item)} `)); const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = '×'; remove.dataset.remove = String(index); remove.setAttribute('aria-label', `Remove ${label(item)}`); remove.addEventListener('click', () => { items.splice(index, 1); save(); render(); }); row.append(remove); list.append(row); });
+    panel.append(list); const continueLink = document.createElement('a'); continueLink.className = 'button button-dark'; continueLink.href = '../../index.html#inquire'; continueLink.textContent = 'Continue to quote'; panel.append(continueLink);
   };
   document.querySelectorAll('.meal-option').forEach((option) => {
     const name = option.querySelector('h2')?.textContent || 'Menu selection';
