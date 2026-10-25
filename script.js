@@ -1,3 +1,4 @@
+const localDateString = () => { const now = new Date(); const offsetNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000); return offsetNow.toISOString().slice(0, 10); };
 document.querySelectorAll('.photo-card img, .hero-art-image').forEach((image) => {
   const source = image.currentSrc || image.src;
   const preload = new Image();
@@ -13,7 +14,7 @@ document.querySelectorAll('.photo-card img, .hero-art-image').forEach((image) =>
 const storyImage = document.querySelector('.story-image');
 if (storyImage) storyImage.style.backgroundImage = "url('assets/images/michelle-event-portrait-branded.png')";
 const dateField = document.querySelector('input[name="date"]');
-if (dateField) dateField.min = new Date().toISOString().slice(0, 10);
+if (dateField) dateField.min = localDateString();
 const toggle = document.querySelector('.menu-toggle');
 const links = document.querySelector('.nav-links');
 toggle?.addEventListener('click', () => { const open = links.classList.toggle('open'); toggle.setAttribute('aria-expanded', String(open)); if (open) links.querySelector('a')?.focus(); });
@@ -21,7 +22,7 @@ document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && 
 const inquiryForm = document.querySelector('.inquiry-form');
 inquiryForm?.addEventListener('submit', async (event) => {
   event.preventDefault(); const form = event.currentTarget; const status = form.querySelector('.form-status'); const button = form.querySelector('button[type="submit"]'); const data = Object.fromEntries(new FormData(form)); const guests = Number(data.guests);
-  if (!data.name?.trim() || !data.email?.trim() || !data.date || data.date < new Date().toISOString().slice(0, 10) || !data.eventType || !Number.isInteger(guests) || guests < 1 || guests > 1000) { status.textContent = 'Please choose today or a future date and enter 1–1,000 guests.'; return; }
+  if (!data.name?.trim() || !data.email?.trim() || !data.date || data.date < localDateString() || !data.eventType || !Number.isInteger(guests) || guests < 1 || guests > 1000) { status.textContent = 'Please choose today or a future date and enter 1–1,000 guests.'; return; }
   button.disabled = true; button.textContent = 'Sending…'; let cart = []; try { const stored = JSON.parse(localStorage.getItem('michelles-quote-cart') || '[]'); if (Array.isArray(stored)) cart = stored.filter((item) => typeof item === 'string').slice(0, 20); } catch {} if (cart.length) data.message = `Selected menus: ${cart.join(', ')}\n${data.message || ''}`.trim(); const smsBody = `Michelle's Catering inquiry\nName: ${data.name}\nEmail: ${data.email}\nDate: ${data.date}\nGuests: ${data.guests}\nEvent: ${data.eventType}\nDetails: ${data.message || 'None provided'}`;
   try { if (!/^https?:$/.test(location.protocol)) throw new Error('Preview mode'); const response = await fetch('/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!response.ok) throw new Error('Inquiry service unavailable'); status.textContent = 'Thank you — Michelle’s team received your inquiry.'; form.reset(); } catch (error) { status.textContent = 'Opening a text message so your inquiry is not lost.'; window.location.href = `sms:+17722823269?body=${encodeURIComponent(smsBody)}`; } finally { button.disabled = false; button.innerHTML = 'Request a quote <span>↗</span>'; }
 });
